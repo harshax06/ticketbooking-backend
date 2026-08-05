@@ -3,8 +3,8 @@ spring:
     name: ticketbooking
   datasource:
     url: jdbc:postgresql://localhost:5432/ticketbooking
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: update
