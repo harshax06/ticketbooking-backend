@@ -1,45 +1,65 @@
 package com.harsha.ticketbooking.service;
 
+import com.harsha.ticketbooking.dto.request.EventRequestDto;
+import com.harsha.ticketbooking.dto.response.EventResponseDto;
 import com.harsha.ticketbooking.entity.Event;
+import com.harsha.ticketbooking.entity.Venue;
+import com.harsha.ticketbooking.mapper.EventMapper;
 import com.harsha.ticketbooking.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
-    private EventRepository eventRepository ;
+    private final EventRepository eventRepository ;
+    private final VenueService venueService ;
 
-    EventService(EventRepository eventRepository) {
+    EventService(EventRepository eventRepository, VenueService venueService) {
         this.eventRepository = eventRepository ;
+        this.venueService = venueService;
     }
 
-    public Event create(Event event) {
-        return eventRepository.save(event) ;
+    public EventResponseDto create(EventRequestDto dto) {
+        Venue venue = venueService.findEntityById(dto.getVenueId());
+        Event event = EventMapper.toEntity(dto,venue);
+        Event saved = eventRepository.save(event);
+        return EventMapper.toResponseDto(saved);
     }
 
-    public List<Event> getAll() {
-        return eventRepository.findAll() ;
+    public List<EventResponseDto> getAll() {
+        return eventRepository.findAll()
+                .stream()
+                .map(EventMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public Event getById(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Event not found with id : " + id)) ;
+    public EventResponseDto getById(Long id) {
+        Event event = findEntityById(id);
+        return EventMapper.toResponseDto(event);
     }
 
-    public Event update(Long id , Event updateEvent) {
-        Event existing = getById(id) ;
-        existing.setTitle(updateEvent.getTitle());
-        existing.setCategory(updateEvent.getCategory());
-        existing.setStartTime(updateEvent.getStartTime());
-        existing.setVenue(updateEvent.getVenue());
-        return eventRepository.save(existing) ;
+    public EventResponseDto update(Long id , EventRequestDto dto) {
+        Event existing = findEntityById(id) ;
+        Venue venue = venueService.findEntityById(dto.getVenueId()) ;
+        existing.setTitle(dto.getTitle());
+        existing.setCategory(dto.getCategory());
+        existing.setStartTime(dto.getStartTime());
+        existing.setVenue(venue);
+        Event updated = eventRepository.save(existing) ;
+        return EventMapper.toResponseDto(updated) ;
     }
 
     public void delete(Long id) {
-        Event existing = getById(id) ;
+        Event existing = findEntityById(id) ;
         eventRepository.delete(existing);
+    }
+
+    private Event findEntityById(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with id : " + id)) ;
     }
 
 }

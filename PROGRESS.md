@@ -5,3 +5,6 @@
 
 ## Day 2 - CRUD API
 - CRUD APIs for Venue & Event with REST conventions
+
+## Day 3 
+- DTOs, Bean Validation, mapper classes
