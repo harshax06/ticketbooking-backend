@@ -8,3 +8,6 @@
 
 ## Day 3 
 - DTOs, Bean Validation, mapper classes
+
+## Day 4
+- Global exception handling, custom exceptions, standard error format

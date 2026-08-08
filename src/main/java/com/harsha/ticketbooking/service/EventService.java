@@ -4,6 +4,7 @@ import com.harsha.ticketbooking.dto.request.EventRequestDto;
 import com.harsha.ticketbooking.dto.response.EventResponseDto;
 import com.harsha.ticketbooking.entity.Event;
 import com.harsha.ticketbooking.entity.Venue;
+import com.harsha.ticketbooking.exception.ResourceNotFoundException;
 import com.harsha.ticketbooking.mapper.EventMapper;
 import com.harsha.ticketbooking.repository.EventRepository;
 import org.springframework.stereotype.Service;
@@ -59,7 +60,7 @@ public class EventService {
 
     private Event findEntityById(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Event not found with id : " + id)) ;
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id : "+id)) ;
     }
 
 }

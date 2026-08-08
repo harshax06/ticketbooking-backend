@@ -3,6 +3,7 @@ package com.harsha.ticketbooking.service;
 import com.harsha.ticketbooking.dto.request.VenueRequestDto;
 import com.harsha.ticketbooking.dto.response.VenueResponseDto;
 import com.harsha.ticketbooking.entity.Venue;
+import com.harsha.ticketbooking.exception.ResourceNotFoundException;
 import com.harsha.ticketbooking.mapper.VenueMapper;
 import com.harsha.ticketbooking.repository.VenueRepository;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class VenueService {
 
     public Venue findEntityById(Long id) {
         return venueRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Venue not found with id : "+id));
+                .orElseThrow(() -> new ResourceNotFoundException("Venue not found with id : "+id));
     }
 
 }
