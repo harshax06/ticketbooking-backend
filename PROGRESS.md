@@ -11,3 +11,6 @@
 
 ## Day 4
 - Global exception handling, custom exceptions, standard error format
+
+## Day 5
+- Seat entity modeled, Venue-Seat relationship, unique constraint on seat position
