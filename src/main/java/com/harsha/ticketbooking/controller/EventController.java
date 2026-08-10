@@ -5,6 +5,8 @@ import com.harsha.ticketbooking.dto.response.EventResponseDto;
 import com.harsha.ticketbooking.entity.Event;
 import com.harsha.ticketbooking.service.EventService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,15 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventResponseDto>> getAll() {
-        return ResponseEntity.ok(eventService.getAll()) ;
+    public ResponseEntity<Page<EventResponseDto>> getAll(String category , Long venueId , Pageable pageable) {
+        if(category != null) {
+            return ResponseEntity.ok(eventService.getByCategory(category,pageable));
+        }
+
+        if(venueId != null) {
+            return ResponseEntity.ok(eventService.getByVenueId(venueId,pageable));
+        }
+        return ResponseEntity.ok(eventService.getAll(pageable)) ;
     }
 
     @GetMapping("/{id}")

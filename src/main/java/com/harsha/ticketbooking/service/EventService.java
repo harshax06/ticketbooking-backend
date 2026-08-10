@@ -7,6 +7,8 @@ import com.harsha.ticketbooking.entity.Venue;
 import com.harsha.ticketbooking.exception.ResourceNotFoundException;
 import com.harsha.ticketbooking.mapper.EventMapper;
 import com.harsha.ticketbooking.repository.EventRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -61,6 +63,21 @@ public class EventService {
     private Event findEntityById(Long id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id : "+id)) ;
+    }
+
+    public Page<EventResponseDto> getAll(Pageable pageable) {
+        return eventRepository.findAll(pageable)
+                .map(EventMapper::toResponseDto);
+    }
+
+    public Page<EventResponseDto> getByCategory(String category , Pageable pageable) {
+        return eventRepository.findByCategory(category,pageable)
+                .map(EventMapper::toResponseDto);
+    }
+
+    public Page<EventResponseDto> getByVenueId(Long venueId , Pageable pageable) {
+        return eventRepository.findByVenueId(venueId,pageable)
+                .map(EventMapper::toResponseDto) ;
     }
 
 }

@@ -14,3 +14,6 @@
 
 ## Day 5
 - Seat entity modeled, Venue-Seat relationship, unique constraint on seat position
+
+## Day 6
+- Repository layer — derived queries, pagination, sorting; bulk seat creation endpoint
