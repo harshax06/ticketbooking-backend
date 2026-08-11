@@ -17,3 +17,6 @@
 
 ## Day 6
 - Repository layer — derived queries, pagination, sorting; bulk seat creation endpoint
+
+## Day 7
+- Service layer refactor — constructor injection, @Transactional boundaries, consistent patterns

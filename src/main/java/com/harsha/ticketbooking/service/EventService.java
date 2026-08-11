@@ -7,24 +7,23 @@ import com.harsha.ticketbooking.entity.Venue;
 import com.harsha.ticketbooking.exception.ResourceNotFoundException;
 import com.harsha.ticketbooking.mapper.EventMapper;
 import com.harsha.ticketbooking.repository.EventRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository ;
     private final VenueService venueService ;
 
-    EventService(EventRepository eventRepository, VenueService venueService) {
-        this.eventRepository = eventRepository ;
-        this.venueService = venueService;
-    }
-
+    @Transactional
     public EventResponseDto create(EventRequestDto dto) {
         Venue venue = venueService.findEntityById(dto.getVenueId());
         Event event = EventMapper.toEntity(dto,venue);
@@ -32,6 +31,7 @@ public class EventService {
         return EventMapper.toResponseDto(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponseDto> getAll() {
         return eventRepository.findAll()
                 .stream()
@@ -39,11 +39,13 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public EventResponseDto getById(Long id) {
         Event event = findEntityById(id);
         return EventMapper.toResponseDto(event);
     }
 
+    @Transactional
     public EventResponseDto update(Long id , EventRequestDto dto) {
         Event existing = findEntityById(id) ;
         Venue venue = venueService.findEntityById(dto.getVenueId()) ;
@@ -55,6 +57,7 @@ public class EventService {
         return EventMapper.toResponseDto(updated) ;
     }
 
+    @Transactional
     public void delete(Long id) {
         Event existing = findEntityById(id) ;
         eventRepository.delete(existing);
