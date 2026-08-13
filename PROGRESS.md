@@ -20,3 +20,6 @@
 
 ## Day 7
 - Service layer refactor — constructor injection, @Transactional boundaries, consistent patterns
+
+## Day 8
+- User & Booking entities, relationships wired, DB-level unique constraint on (event, seat)
