@@ -27,7 +27,7 @@ distributed-systems tradeoff, not just an endpoint.
 _Diagram + explanation added Week 1._
 
 ## Core Domain
-`User`, `Organizer`, `Venue`, `Event`, `Seat`, `Booking`, `Payment`, `Waitlist`, `Notification`
+`User`, `Organizer`, `Venue`, `Event`, `Seat`, `BookingMapper`, `Payment`, `Waitlist`, `Notification`
 
 ## Running locally
 _Instructions added once Docker Compose is in place (Day 8+)._

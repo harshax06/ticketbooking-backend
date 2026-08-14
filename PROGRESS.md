@@ -23,3 +23,6 @@
 
 ## Day 8
 - User & Booking entities, relationships wired, DB-level unique constraint on (event, seat)
+
+## Day 9
+- Naive booking endpoint built - reproduced double-booking race condition under concurrent requests 

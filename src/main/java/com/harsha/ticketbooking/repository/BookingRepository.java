@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface BookingRepository extends JpaRepository<Booking,Long> {
     Page<Booking> findByUserId(Long userId , Pageable pageable) ;
     Page<Booking> findByEventId(Long eventId , Pageable pageable) ;
+
+    boolean existsByEventIdAndSeatId(Long id, Long id1);
 }

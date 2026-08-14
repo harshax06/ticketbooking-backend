@@ -72,4 +72,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error) ;
     }
 
+    @ExceptionHandler(SeatUnavailableException.class)
+    public ResponseEntity<ApiError> handleSeatUnavailable(SeatUnavailableException ex , HttpServletRequest request) {
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Seat Unavailable",
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error) ;
+    }
+
 }

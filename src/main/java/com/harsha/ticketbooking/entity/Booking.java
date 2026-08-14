@@ -1,6 +1,10 @@
 package com.harsha.ticketbooking.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -9,6 +13,10 @@ import java.time.LocalDateTime;
         name = "bookings",
         uniqueConstraints = @UniqueConstraint(columnNames = {"event_id" , "seat_id"})
 )
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +36,7 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookingStatus bookingStatus ;
+    private BookingStatus status ;
 
     @Column(name = "booked_at" , nullable = false)
     private LocalDateTime bookedAt ;
