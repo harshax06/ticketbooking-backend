@@ -26,3 +26,6 @@
 
 ## Day 9
 - Naive booking endpoint built - reproduced double-booking race condition under concurrent requests 
+
+## Day 10
+- Optimistic locking on Seat, clean conflict handling, automated concurrency test proving no double-booking

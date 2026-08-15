@@ -33,4 +33,10 @@ public class Seat {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id" , nullable = false)
     private Venue venue ;
+
+    @Version
+    private Long version ;
+
+    @Column(name = "last_touched_at")
+    private java.time.LocalDateTime lastTouchedAt ;
 }

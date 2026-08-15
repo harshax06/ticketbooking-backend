@@ -10,7 +10,6 @@ import com.harsha.ticketbooking.repository.BookingRepository;
 import com.harsha.ticketbooking.repository.EventRepository;
 import com.harsha.ticketbooking.repository.SeatRepository;
 import com.harsha.ticketbooking.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +36,9 @@ public class BookingService {
             throw new SeatUnavailableException(
                     "Seat" + seat.getRowLabel() + seat.getSeatNumber() + " is already booked for this event");
         }
+
+        seat.setLastTouchedAt(LocalDateTime.now());
+        seatRepository.saveAndFlush(seat) ;
 
         Booking booking = new Booking();
         booking.setEvent(event);
