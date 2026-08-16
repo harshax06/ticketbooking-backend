@@ -8,6 +8,10 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class TicketbookingApplication {
 
+	static {
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(TicketbookingApplication.class, args);
 	}
