@@ -7,19 +7,22 @@ import com.harsha.ticketbooking.entity.Venue;
 import com.harsha.ticketbooking.exception.ResourceNotFoundException;
 import com.harsha.ticketbooking.mapper.EventMapper;
 import com.harsha.ticketbooking.repository.EventRepository;
+import com.harsha.ticketbooking.repository.specification.EventSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
+
     private final EventRepository eventRepository ;
     private final VenueService venueService ;
 
@@ -80,6 +83,25 @@ public class EventService {
 
     public Page<EventResponseDto> getByVenueId(Long venueId , Pageable pageable) {
         return eventRepository.findByVenueId(venueId,pageable)
+                .map(EventMapper::toResponseDto) ;
+    }
+
+    public Page<EventResponseDto> search(
+            String city,
+            String category,
+            LocalDateTime from,
+            LocalDateTime to,
+            String keyword,
+            Pageable pageable
+    ) {
+        Specification<Event> spec = Specification
+                .where(EventSpecifications.hasCity(city))
+                .and(EventSpecifications.hasCategory(category))
+                .and(EventSpecifications.startsAfter(from))
+                .and(EventSpecifications.startsBefore(to))
+                .and(EventSpecifications.titleContains(keyword)) ;
+
+        return eventRepository.findAll(spec , pageable)
                 .map(EventMapper::toResponseDto) ;
     }
 

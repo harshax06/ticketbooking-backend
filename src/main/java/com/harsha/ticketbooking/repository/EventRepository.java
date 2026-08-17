@@ -4,10 +4,11 @@ import com.harsha.ticketbooking.entity.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.time.LocalDateTime;
 
-public interface EventRepository extends JpaRepository<Event,Long> {
+public interface EventRepository extends JpaRepository<Event,Long> , JpaSpecificationExecutor<Event> {
     Page<Event> findByCategory(String category , Pageable pageable) ;
     Page<Event> findByVenueId(Long id , Pageable pageable) ;
     Page<Event> findByStartTimeAfter(LocalDateTime dateTime , Pageable pageable) ;

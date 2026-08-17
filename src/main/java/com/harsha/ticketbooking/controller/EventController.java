@@ -7,10 +7,12 @@ import com.harsha.ticketbooking.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -58,4 +60,15 @@ public class EventController {
         return ResponseEntity.noContent().build() ;
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<EventResponseDto>> search(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)LocalDateTime to,
+            @RequestParam(required = false) String keyword,
+            Pageable pageable
+            ){
+        return ResponseEntity.ok(eventService.search(city,category,from,to,keyword,pageable)) ;
+    }
 }

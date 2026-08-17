@@ -21,3 +21,5 @@
 - [x] Day 10: Optimistic locking on Seat, clean conflict handling, automated concurrency test proving no double-booking
 
 - [x] Day 11: Pessimistic locking implemented, tested with concurrency test, documented comparison vs optimistic locking
+
+- [x] Day 12: Dynamic multi-field event search (Specifications), JPQL aggregate query
