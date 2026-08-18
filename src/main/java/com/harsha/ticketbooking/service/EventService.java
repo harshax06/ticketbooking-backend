@@ -105,4 +105,9 @@ public class EventService {
                 .map(EventMapper::toResponseDto) ;
     }
 
+    public Page<EventResponseDto> findAll(Pageable pageable) {
+        return eventRepository.findAllWithVenueGraph(pageable)
+                .map(EventMapper::toResponseDto) ;
+    }
+
 }

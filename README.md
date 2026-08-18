@@ -57,3 +57,16 @@ second, pessimistic locking's queueing behavior gives more predictable,
 fair outcomes than a storm of failed optimistic retries. A production
 system might reasonably use optimistic locking generally, with a
 pessimistic fallback specifically for detected high-demand events.
+
+
+## N+1 Query Fix
+
+Before: GET /api/v1/events (10 results) generated 11 SQL queries
+(1 for events + 1 per event's venue lookup, due to lazy loading).
+
+After: Same endpoint now generates exactly 1 query using
+@EntityGraph(attributePaths = {"venue"}), which performs the join
+at the database level in a single round trip.
+
+Verified using hibernate.generate_statistics and manual query counting
+in logs before/after the fix.

@@ -23,3 +23,5 @@
 - [x] Day 11: Pessimistic locking implemented, tested with concurrency test, documented comparison vs optimistic locking
 
 - [x] Day 12: Dynamic multi-field event search (Specifications), JPQL aggregate query
+
+- [x] Day 13: Diagnosed and fixed N+1 query problem, lazy vs eager fetch strategy documented
