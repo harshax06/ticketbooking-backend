@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+@org.hibernate.annotations.SQLDelete(sql = "UPDATE events SET deleted_at = now() WHERE id = ?")
+@org.hibernate.annotations.SQLRestriction("deleted_at IS NULL")
+public class Event extends Auditable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id ;
@@ -26,4 +28,11 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id")
     private Venue venue ;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt ;
+
+    public boolean isDeleted() {
+        return deletedAt != null ;
+    }
 }
