@@ -22,7 +22,7 @@ spring:
         one-indexed-parameters: false
 
 jwt:
-  secret: ${JWT_SECRET:A5I4qLeNjkdgRhueN1ZiRtmxjrB9l9FVf7U+4pMrK30=}
+  secret: ${JWT_SECRET}
   expiration-ms: 3600000
 
 server:
