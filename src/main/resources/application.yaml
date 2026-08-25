@@ -21,5 +21,9 @@ spring:
         max-page-size: 50
         one-indexed-parameters: false
 
+jwt:
+  secret: ${JWT_SECRET:A5I4qLeNjkdgRhueN1ZiRtmxjrB9l9FVf7U+4pMrK30=}
+  expiration-ms: 3600000
+
 server:
   port: 8080
