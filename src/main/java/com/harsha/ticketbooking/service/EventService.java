@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ public class EventService {
     private final EventRepository eventRepository ;
     private final VenueService venueService ;
 
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     @Transactional
     public EventResponseDto create(EventRequestDto dto) {
         Venue venue = venueService.findEntityById(dto.getVenueId());
@@ -48,6 +50,7 @@ public class EventService {
         return EventMapper.toResponseDto(event);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @eventSecurity.isOwner(#id, authentication.name)")
     @Transactional
     public EventResponseDto update(Long id , EventRequestDto dto) {
         Event existing = findEntityById(id) ;
@@ -108,6 +111,14 @@ public class EventService {
     public Page<EventResponseDto> findAll(Pageable pageable) {
         return eventRepository.findAllWithVenueGraph(pageable)
                 .map(EventMapper::toResponseDto) ;
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventResponseDto> getDeletedEvents() {
+        return eventRepository.findAllDeletedNative()
+                .stream()
+                .map(EventMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
 }

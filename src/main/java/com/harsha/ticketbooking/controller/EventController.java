@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -70,5 +71,11 @@ public class EventController {
             Pageable pageable
             ){
         return ResponseEntity.ok(eventService.search(city,category,from,to,keyword,pageable)) ;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/deleted")
+    public ResponseEntity<List<EventResponseDto>> getDeletedEvents() {
+        return ResponseEntity.ok(eventService.getDeletedEvents());
     }
 }

@@ -4,11 +4,14 @@ import com.harsha.ticketbooking.dto.request.BookingRequestDto;
 import com.harsha.ticketbooking.entity.*;
 import com.harsha.ticketbooking.repository.*;
 import com.harsha.ticketbooking.service.BookingService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,10 +28,11 @@ public class BookingPessimisticConcurrencyTest {
     @Autowired private BookingService bookingService;
     @Autowired private VenueRepository venueRepository;
     @Autowired private SeatRepository seatRepository;
-    @Autowired
-    private EventRepository eventRepository;
+    @Autowired private EventRepository eventRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private BookingRepository bookingRepository;
+    @Autowired private RefreshTokenRepository refreshTokenRepository;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
     private Long seatId;
     private Long eventId;
@@ -64,10 +68,20 @@ public class BookingPessimisticConcurrencyTest {
                     User u = new User();
                     u.setEmail("pracer" + i + "@test.com");
                     u.setName("PRacer " + i);
+                    u.setPasswordHash("test-password-hash");
                     return userRepository.save(u).getId();
                 })
                 .toList();
     }
+
+    @AfterEach
+    void tearDown() {
+        jdbcTemplate.execute("""
+            TRUNCATE TABLE refresh_tokens, bookings, seats, events, users, venues
+            RESTART IDENTITY CASCADE
+            """);
+    }
+
     @Test
     void onlyOneBookingShouldSucceedUnderPessimisticLocking() throws InterruptedException {
         int threadCount = 10;

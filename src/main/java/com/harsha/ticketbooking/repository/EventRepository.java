@@ -29,4 +29,8 @@ public interface EventRepository extends JpaRepository<Event,Long> , JpaSpecific
     @Query("SELECT e FROM Event e")
     Page<Event> findAllWithVenueGraph(Pageable pageable);
 
+    @Query(value = "SELECT * FROM events WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC",
+            nativeQuery = true)
+    List<Event> findAllDeletedNative();
+
 }

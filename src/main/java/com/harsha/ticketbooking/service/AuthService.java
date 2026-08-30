@@ -3,6 +3,7 @@ package com.harsha.ticketbooking.service;
 import com.harsha.ticketbooking.dto.request.LoginRequestDto;
 import com.harsha.ticketbooking.dto.request.RegisterRequestDto;
 import com.harsha.ticketbooking.dto.response.AuthResponseDto;
+import com.harsha.ticketbooking.entity.RefreshToken;
 import com.harsha.ticketbooking.entity.Role;
 import com.harsha.ticketbooking.entity.User;
 import com.harsha.ticketbooking.exception.BadRequestException;
@@ -18,6 +19,7 @@ public class AuthService {
     private final UserRepository userRepository ;
     private final PasswordEncoder passwordEncoder ;
     private final JwtService jwtService ;
+    private final RefreshTokenService refreshTokenService ;
 
     public AuthResponseDto register(RegisterRequestDto dto) {
         if(userRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -31,9 +33,10 @@ public class AuthService {
         user.setRole(Role.USER);
 
         User saved = userRepository.save(user) ;
-        String token = jwtService.generateToken(saved.getEmail(), saved.getRole().name());
+        String accessToken = jwtService.generateToken(saved.getEmail(), saved.getRole().name());
 
-        return new AuthResponseDto(token , saved.getEmail(), saved.getRole().name());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        return new AuthResponseDto(accessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
     }
 
     public AuthResponseDto login(LoginRequestDto dto) {
@@ -44,7 +47,9 @@ public class AuthService {
             throw new BadRequestException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
-        return new AuthResponseDto(token, user.getEmail(), user.getRole().name());
+        String accessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        return new AuthResponseDto(accessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
     }
 }

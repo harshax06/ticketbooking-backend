@@ -11,11 +11,13 @@ import com.harsha.ticketbooking.repository.EventRepository;
 import com.harsha.ticketbooking.repository.SeatRepository;
 import com.harsha.ticketbooking.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -26,6 +28,9 @@ public class BookingService {
 
     @Transactional
     public BookingResponseDto createBooking(BookingRequestDto dto) {
+
+        log.info("Booking attempt: eventId={}, seatId={}, userId={}", dto.getEventId(), dto.getSeatId(), dto.getUserId());
+
         Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id : " + dto.getEventId())) ;
         Seat seat = seatRepository.findById(dto.getSeatId())
@@ -50,6 +55,8 @@ public class BookingService {
         booking.setBookedAt(LocalDateTime.now());
 
         Booking saved = bookingRepository.save(booking) ;
+
+        log.info("Booking confirmed: bookingId={}, seatId={}", saved.getId(), seat.getId());
         return BookingMapper.toResponseDto(saved) ;
     }
 

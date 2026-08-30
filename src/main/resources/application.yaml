@@ -22,8 +22,13 @@ spring:
         one-indexed-parameters: false
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration-ms: 3600000
+  secret: bHD+gk0rK+UjouxUZ5MsE7ecbyIrewfZTu6m7AagGYA=
+  access-expiration-ms: 900000
+  refresh-expiration-ms: 604800000
 
 server:
   port: 8080
+
+logging:
+  pattern:
+    console: "%d{HH:mm:ss} [%X{correlationId}] %-5level %logger{36} - %msg%n"

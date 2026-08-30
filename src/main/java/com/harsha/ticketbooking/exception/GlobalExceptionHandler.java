@@ -1,6 +1,7 @@
 package com.harsha.ticketbooking.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -61,6 +63,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex , HttpServletRequest request) {
+
+        log.error("Unexpected error at {}", request.getRequestURI(), ex);
+
         ApiError error = new ApiError(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -74,6 +79,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SeatUnavailableException.class)
     public ResponseEntity<ApiError> handleSeatUnavailable(SeatUnavailableException ex , HttpServletRequest request) {
+
+        log.warn("Seat unavailable: {} at {}", ex.getMessage(), request.getRequestURI());
+
         ApiError error = new ApiError(
                 LocalDateTime.now(),
                 HttpStatus.CONFLICT.value(),
@@ -111,4 +119,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error) ;
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(Exception ex, HttpServletRequest request) {
+        ApiError error = new ApiError(LocalDateTime.now(), 403, "FORBIDDEN",
+                "You do not have permission to perform this action", request.getRequestURI(), null);
+        return ResponseEntity.status(403).body(error);
+    }
 }

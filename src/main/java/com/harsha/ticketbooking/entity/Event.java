@@ -26,6 +26,10 @@ public class Event extends Auditable{
     private LocalDateTime startTime ;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_id")
+    private User organizer ;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id")
     private Venue venue ;
 

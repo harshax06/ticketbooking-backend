@@ -4,10 +4,13 @@ import com.harsha.ticketbooking.dto.request.BookingRequestDto;
 import com.harsha.ticketbooking.entity.*;
 import com.harsha.ticketbooking.repository.*;
 import com.harsha.ticketbooking.service.BookingService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +30,7 @@ public class BookingConcurrencyTest {
     @Autowired private EventRepository eventRepository ;
     @Autowired private UserRepository userRepository ;
     @Autowired private BookingRepository bookingRepository ;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
     private Long seatId ;
     private Long eventId ;
@@ -62,9 +66,18 @@ public class BookingConcurrencyTest {
                     User u = new User();
                     u.setEmail("racer" + i + "@test.com");
                     u.setName("Racer " + i);
+                    u.setPasswordHash("test-password-hash");
                     return userRepository.save(u).getId();
                 })
                 .toList();
+    }
+
+    @AfterEach
+    void tearDown() {
+        jdbcTemplate.execute("""
+            TRUNCATE TABLE refresh_tokens, bookings, seats, events, users, venues
+            RESTART IDENTITY CASCADE
+            """);
     }
 
     @Test
