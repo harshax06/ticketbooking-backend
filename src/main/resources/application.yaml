@@ -22,7 +22,7 @@ spring:
         one-indexed-parameters: false
 
 jwt:
-  secret: bHD+gk0rK+UjouxUZ5MsE7ecbyIrewfZTu6m7AagGYA=
+  secret: ${JWT_SECRET}
   access-expiration-ms: 900000
   refresh-expiration-ms: 604800000
 
