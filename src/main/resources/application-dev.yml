@@ -16,4 +16,4 @@ spring:
       type: redis
 
 jwt:
-  secret: ${JWT_SECRET:WPS9hvhB9vjuZROvb8Z4p+zfX2AxaHHLlx4HhlXDU2s=}
+  secret: ${JWT_SECRET}
