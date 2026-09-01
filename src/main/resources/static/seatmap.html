@@ -7,7 +7,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
-    const eventId = 1;
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('eventId') || 1;
+    document.querySelector('h2').textContent += ` (Event ${eventId})`;
+
     const socket = new SockJS('/ws');
     const stompClient = Stomp.over(socket);
 
@@ -16,6 +19,9 @@
             const update = JSON.parse(message.body);
             document.getElementById('seats').innerHTML +=
                 `<p>Seat ${update.seatId} is now ${update.status}</p>`;
+        }, (error) => {
+            console.error('WebSocket connection failed:', error);
+            document.getElementById('seats').innerHTML = '<p style="color:red">Connection failed - check console</p>';
         });
     });
 </script>
