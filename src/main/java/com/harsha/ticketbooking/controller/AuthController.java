@@ -4,7 +4,7 @@ import com.harsha.ticketbooking.dto.request.*;
 import com.harsha.ticketbooking.dto.response.AuthResponseDto;
 import com.harsha.ticketbooking.entity.RefreshToken;
 import com.harsha.ticketbooking.service.AuthService;
-import com.harsha.ticketbooking.service.JwtService;
+import com.harsha.ticketbooking.security.JwtService;
 import com.harsha.ticketbooking.service.PasswordResetService;
 import com.harsha.ticketbooking.service.RefreshTokenService;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@Valid @PathVariable LoginRequestDto dto) {
+    public ResponseEntity<AuthResponseDto> login(@Valid @RequestBody LoginRequestDto dto) {
         return ResponseEntity.ok(authService.login(dto));
     }
 

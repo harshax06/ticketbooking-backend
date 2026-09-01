@@ -1,5 +1,6 @@
 package com.harsha.ticketbooking.service;
 
+import com.harsha.ticketbooking.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

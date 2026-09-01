@@ -34,15 +34,8 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<EventResponseDto>> getAll(String category , Long venueId , Pageable pageable) {
-        if(category != null) {
-            return ResponseEntity.ok(eventService.getByCategory(category,pageable));
-        }
-
-        if(venueId != null) {
-            return ResponseEntity.ok(eventService.getByVenueId(venueId,pageable));
-        }
-        return ResponseEntity.ok(eventService.getAll(pageable)) ;
+    public ResponseEntity<Page<EventResponseDto>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(eventService.getAll(pageable));
     }
 
     @GetMapping("/{id}")

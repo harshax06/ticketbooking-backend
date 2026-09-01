@@ -125,4 +125,18 @@ public class GlobalExceptionHandler {
                 "You do not have permission to perform this action", request.getRequestURI(), null);
         return ResponseEntity.status(403).body(error);
     }
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleMalformedJson(
+            org.springframework.http.converter.HttpMessageNotReadableException ex, HttpServletRequest request) {
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "MALFORMED_REQUEST",
+                "The request body could not be parsed. Check your JSON syntax.",
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

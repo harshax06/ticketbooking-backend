@@ -8,6 +8,7 @@ import com.harsha.ticketbooking.entity.Role;
 import com.harsha.ticketbooking.entity.User;
 import com.harsha.ticketbooking.exception.BadRequestException;
 import com.harsha.ticketbooking.repository.UserRepository;
+import com.harsha.ticketbooking.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,17 +27,17 @@ public class AuthService {
             throw new BadRequestException("An account with this email is already exists");
         }
 
-        User user = new User() ;
+        User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPasswordHash(passwordEncoder.encode(dto.getPassword()));
         user.setRole(Role.USER);
 
-        User saved = userRepository.save(user) ;
+        User saved = userRepository.save(user);
         String accessToken = jwtService.generateToken(saved.getEmail(), saved.getRole().name());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-        return new AuthResponseDto(accessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
+        return new AuthResponseDto(accessToken, user.getEmail(), user.getRole().name(), refreshToken.getToken());
     }
 
     public AuthResponseDto login(LoginRequestDto dto) {
@@ -50,6 +51,6 @@ public class AuthService {
         String accessToken = jwtService.generateToken(user.getEmail(), user.getRole().name());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-        return new AuthResponseDto(accessToken, refreshToken.getToken(), user.getEmail(), user.getRole().name());
+        return new AuthResponseDto(accessToken, user.getEmail(), user.getRole().name(),  refreshToken.getToken());
     }
 }

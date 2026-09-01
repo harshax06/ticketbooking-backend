@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Live Seat Map</title></head>
+<body>
+<h2>Event Seat Availability (Live)</h2>
+<div id="seats"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+    const eventId = 1;
+    const socket = new SockJS('/ws');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, () => {
+        stompClient.subscribe('/topic/events/' + eventId + '/seats', (message) => {
+            const update = JSON.parse(message.body);
+            document.getElementById('seats').innerHTML +=
+                `<p>Seat ${update.seatId} is now ${update.status}</p>`;
+        });
+    });
+</script>
+</body>
+</html>

@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.Optional;
 
@@ -29,6 +30,7 @@ public class BookingServiceTest {
     @Mock private EventRepository eventRepository;
     @Mock private SeatRepository seatRepository;
     @Mock private UserRepository userRepository;
+    @Mock private SimpMessagingTemplate messagingTemplate;
 
     @InjectMocks
     private BookingService bookingService;

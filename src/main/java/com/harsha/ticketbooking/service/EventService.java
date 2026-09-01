@@ -9,6 +9,8 @@ import com.harsha.ticketbooking.mapper.EventMapper;
 import com.harsha.ticketbooking.repository.EventRepository;
 import com.harsha.ticketbooking.repository.specification.EventSpecifications;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventService {
 
     private final EventRepository eventRepository ;
@@ -34,14 +37,6 @@ public class EventService {
         Event event = EventMapper.toEntity(dto,venue);
         Event saved = eventRepository.save(event);
         return EventMapper.toResponseDto(saved);
-    }
-
-    @Transactional(readOnly = true)
-    public List<EventResponseDto> getAll() {
-        return eventRepository.findAll()
-                .stream()
-                .map(EventMapper::toResponseDto)
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -74,21 +69,24 @@ public class EventService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found with id : "+id)) ;
     }
 
+
+    @Cacheable(value = "events", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort.toString()")
+    @Transactional(readOnly = true)
+    public List<EventResponseDto> getAllCached(Pageable pageable) {
+        log.info("Cache miss - fetching events from database");
+        return eventRepository.findAllWithVenueGraph(pageable)
+                .map(EventMapper::toResponseDto)
+                .getContent();
+    }
+
+    @Transactional(readOnly = true)
     public Page<EventResponseDto> getAll(Pageable pageable) {
-        return eventRepository.findAll(pageable)
-                .map(EventMapper::toResponseDto);
+        List<EventResponseDto> content = getAllCached(pageable);
+        long total = eventRepository.count();  // total count, uncached but cheap
+        return new org.springframework.data.domain.PageImpl<>(content, pageable, total);
     }
 
-    public Page<EventResponseDto> getByCategory(String category , Pageable pageable) {
-        return eventRepository.findByCategory(category,pageable)
-                .map(EventMapper::toResponseDto);
-    }
-
-    public Page<EventResponseDto> getByVenueId(Long venueId , Pageable pageable) {
-        return eventRepository.findByVenueId(venueId,pageable)
-                .map(EventMapper::toResponseDto) ;
-    }
-
+    @Transactional(readOnly = true)
     public Page<EventResponseDto> search(
             String city,
             String category,
@@ -105,11 +103,6 @@ public class EventService {
                 .and(EventSpecifications.titleContains(keyword)) ;
 
         return eventRepository.findAll(spec , pageable)
-                .map(EventMapper::toResponseDto) ;
-    }
-
-    public Page<EventResponseDto> findAll(Pageable pageable) {
-        return eventRepository.findAllWithVenueGraph(pageable)
                 .map(EventMapper::toResponseDto) ;
     }
 

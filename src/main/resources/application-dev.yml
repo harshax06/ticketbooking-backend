@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/ticketbooking
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+    cache:
+      type: redis
+
+jwt:
+  secret: ${JWT_SECRET:WPS9hvhB9vjuZROvb8Z4p+zfX2AxaHHLlx4HhlXDU2s=}

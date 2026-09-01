@@ -1,4 +1,4 @@
-package com.harsha.ticketbooking.service;
+package com.harsha.ticketbooking.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
