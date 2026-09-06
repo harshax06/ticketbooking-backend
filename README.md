@@ -1,4 +1,3 @@
-
 # 🎟️ Concurrent Ticket Booking System
 
 A Spring Boot backend that provably prevents double-booking under real concurrent load — a production-style ticketing platform built to demonstrate real backend engineering: concurrency control, security, caching, real-time updates, and deployment, rather than another CRUD tutorial clone.
@@ -7,7 +6,7 @@ A Spring Boot backend that provably prevents double-booking under real concurren
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1-brightgreen)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7-red)](https://redis.io/)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey)](./LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)]()
 
 🔗 **Live demo:** https://ticketbooking-backend-x63o.onrender.com
 📘 **API docs (Swagger):** https://ticketbooking-backend-x63o.onrender.com/swagger-ui.html
@@ -39,14 +38,13 @@ Every one of these is backed by real, working code — and for the concurrency c
 - [Security](#security)
 - [Caching](#caching)
 - [Real-time seat updates](#real-time-seat-updates)
+- [How to try it](#how-to-try-it)
 - [Getting started](#getting-started)
 - [API overview](#api-overview)
 - [Testing](#testing)
 - [Deployment](#deployment)
 - [Project structure](#project-structure)
 - [What I'd do differently](#what-id-do-differently)
-- [License](#license)
-- [Author](#author)
 
 ---
 
@@ -150,6 +148,65 @@ Booking a seat broadcasts a message over a STOMP WebSocket topic (`/topic/events
 
 ---
 
+## How to try it
+
+No setup required — the API is live. The steps below walk through the actual concurrency and real-time features, not just a health check, so you can see the core claims of this project working firsthand.
+
+> The free-tier instance spins down after inactivity — the **first** request below may take 30–60 seconds to respond while it wakes up. Everything after that is fast.
+
+### 1. Explore the API interactively
+Open the Swagger UI and try any endpoint directly from the browser — no Postman needed:
+👉 **https://ticketbooking-backend-x63o.onrender.com/swagger-ui.html**
+
+### 2. Register an account and get a token
+```bash
+curl -X POST https://ticketbooking-backend-x63o.onrender.com/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Demo User","email":"tryit@example.com","password":"demopass123"}'
+```
+Copy the `token` from the response — you'll need it for the booking step below. Paste it into Swagger's **Authorize** button (top right) to unlock protected endpoints directly in the browser too.
+
+### 3. Browse events
+```bash
+curl https://ticketbooking-backend-x63o.onrender.com/api/v1/events
+```
+No auth required — event browsing is public by design.
+
+### 4. Watch the live seat map update in real time
+Open this in **two separate browser tabs** (swap `1` for a real event ID from step 3 if needed):
+```
+https://ticketbooking-backend-x63o.onrender.com/seatmap.html?eventId=1
+```
+Then book a seat from a terminal:
+```bash
+curl -X POST https://ticketbooking-backend-x63o.onrender.com/api/v1/bookings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-token>" \
+  -d '{"eventId":1,"seatId":1,"userId":1}'
+```
+Both tabs update instantly — no refresh — via the WebSocket broadcast described above.
+
+### 5. See the concurrency safety fail gracefully
+Run the exact same booking request again:
+```bash
+curl -X POST https://ticketbooking-backend-x63o.onrender.com/api/v1/bookings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <your-token>" \
+  -d '{"eventId":1,"seatId":1,"userId":1}'
+```
+Expect a clean `409 SEAT_UNAVAILABLE` — not a crash, not a duplicate booking.
+
+### 6. See the actual proof, not just a live demo
+The live deployment shows the feature working once. The real evidence that it *always* works is the automated test suite — clone the repo and run:
+```bash
+git clone https://github.com/harshax06/ticketbooking-backend.git
+cd ticketbooking-backend
+./mvnw test -Dtest=BookingConcurrencyTest
+```
+This fires 10 concurrent threads at a single seat and asserts exactly one booking succeeds, every run — the strongest claim in this README, backed by a test rather than a screenshot.
+
+---
+
 ## Getting started
 
 ### Prerequisites
@@ -157,14 +214,12 @@ Booking a seat broadcasts a message over a STOMP WebSocket topic (`/topic/events
 - (For local dev without Docker) Java 21, Maven, PostgreSQL 16, Redis 7
 
 ### Run everything with one command
-
 ```bash
 git clone https://github.com/harshax06/ticketbooking-backend.git
 cd ticketbooking-backend
 ```
 
 Create a `.env` file in the project root (not committed — see `.gitignore`):
-
 ```
 JWT_SECRET=<generate-your-own-32-byte-base64-value>
 ```
@@ -172,13 +227,11 @@ JWT_SECRET=<generate-your-own-32-byte-base64-value>
 ```bash
 docker-compose up --build
 ```
-
 This builds the app image, starts Postgres and Redis, waits for Postgres to be healthy, then starts the app.
 
 The API is available at `http://localhost:8080`. Swagger UI at `http://localhost:8080/swagger-ui.html`.
 
 ### Run locally without Docker (dev profile)
-
 ```bash
 docker run -d --name ticketbooking-db -p 5433:5432 \
   -e POSTGRES_DB=ticketbooking -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres \
@@ -189,11 +242,9 @@ docker run -d --name ticketbooking-redis -p 6379:6379 redis:7-alpine
 ```
 
 ### Run the test suite
-
 ```bash
 ./mvnw clean test
 ```
-
 Includes unit tests (Mockito), DTO validation tests, security integration tests (MockMvc), and two multi-threaded concurrency tests — run against a real PostgreSQL instance, both locally and in CI.
 
 ---
@@ -217,7 +268,6 @@ Full interactive documentation is available via Swagger UI. Highlights:
 | `WS` | `/ws` → `/topic/events/{id}/seats` | Public | Live seat availability broadcast |
 
 All error responses follow a consistent shape:
-
 ```json
 {
   "timestamp": "2026-09-01T10:00:00",
@@ -265,11 +315,11 @@ Deployed on **Render** as a Docker Web Service, with managed Postgres and manage
 
 ```
 src/main/java/com/harsha/ticketbooking/
-├── config/            # Security, CORS, caching, WebSocket, OpenAPI, JPA auditing config
-├── controller/        # REST controllers
-├── service/           # Business logic, transaction boundaries
+├── config/          # Security, CORS, caching, WebSocket, OpenAPI, JPA auditing config
+├── controller/       # REST controllers
+├── service/          # Business logic, transaction boundaries
 ├── repository/        # Spring Data JPA repositories + Specifications
-├── entity/            # JPA entities
+├── entity/           # JPA entities
 ├── dto/
 │   ├── request/
 │   └── response/
@@ -290,14 +340,7 @@ Honest notes, because a project without any is less credible than one with a few
 
 ---
 
-## License
-
-Distributed under the MIT License. See [`LICENSE`](./LICENSE) for details.
-
----
-
 ## Author
 
 Built by **Harsha** as a full-cycle backend engineering project — from initial design through production deployment.
-
 🐙 [GitHub](https://github.com/harshax06)
